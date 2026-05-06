@@ -74,6 +74,15 @@ CREATE TABLE PRODUCTO (
     CONSTRAINT PRODUCTO_PK PRIMARY KEY (id_producto)
 ) ;
 
+CREATE TABLE PRODUCTO_CATEGORIA (
+    id_producto NUMERIC(28) NOT NULL,
+    id_categoria NUMERIC(28) NOT NULL,
+    CONSTRAINT PRODUCTO_CATEGORIA_PK PRIMARY KEY (id_producto, id_categoria),
+    CONSTRAINT FK_PC_PRODUCTO FOREIGN KEY (id_producto) REFERENCES PRODUCTO(id_producto),
+    CONSTRAINT FK_PC_CATEGORIA FOREIGN KEY (id_categoria) REFERENCES CATEGORIA(id_categoria)
+);
+
+
 
 -- Tabla para cumplir con el requisito de 1 a 10 imágenes por producto[cite: 2]
 CREATE TABLE PRODUCTO_IMAGEN (
