@@ -30,6 +30,11 @@ public class ClienteController {
         return service.findAll();
     }
 
+    @GetMapping("/active/{active}")
+    public List<Cliente> findAllActiveYN(@PathVariable String active){
+        return service.findAllActiveYN(active);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable Long id) {
         Optional<Cliente> clienteOptional = service.findById(id);
@@ -47,10 +52,36 @@ public class ClienteController {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.save(cliente));
     }
 
+
+    @PostMapping("/encrypt")
+    public ResponseEntity<?> saveEncrypt(@RequestBody Cliente cliente) {
+        service.InsertClienteEncrypt(
+        cliente.getNombre(),
+        cliente.getApellido(),
+        cliente.getEmail(),
+        cliente.getPassword(),
+        cliente.getTelefono(),
+        cliente.getFecha_nacimiento(),
+        cliente.getSexo()
+    );
+        return ResponseEntity.status(HttpStatus.CREATED).body("Creado correctamente.");
+    }
+
+
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@RequestBody Cliente cliente, @PathVariable Long id) {
 
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(service.update(id, cliente));
+    }
+
+    @PutMapping("/delete/{id}")
+    public ResponseEntity<?> delete(@PathVariable Long id) {
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(service.delete(id));
+    }
+
+    @PutMapping("/recover/{id}")
+    public ResponseEntity<?> recover(@PathVariable Long id) {
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(service.recover(id));
     }
 
 
