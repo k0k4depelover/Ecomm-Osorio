@@ -36,19 +36,12 @@ public class ClienteServiceImpl implements ClienteService {
 
     @Override
     @Transactional
-    public Optional<Cliente> update(Long id, Cliente cliente) {
-        Optional<Cliente> clienteOptional= repository.findById(id);
-        if(clienteOptional.isPresent()){
-            Cliente clienteDb= clienteOptional.orElseThrow();
-            clienteDb.setNombre(cliente.getNombre());
-            clienteDb.setApellido(cliente.getApellido());
-            clienteDb.setEmail(cliente.getEmail());
-            clienteDb.setPassword(cliente.getPassword());
-            clienteDb.setTelefono(cliente.getTelefono());
-            clienteDb.setSexo(cliente.getSexo());
-            return Optional.of(repository.save(clienteDb));
-        }
-        return clienteOptional;
+    public void UpdateClienteEncrypt(Long id, String nombre, String apellido, String email,
+        String password, String telefono, Date fecha_nacimiento,
+         String sexo) {
+            repository.sp_update_cliente_encrypt(id, nombre, apellido, email,
+                password, telefono, fecha_nacimiento, sexo);
+
     }
 
 

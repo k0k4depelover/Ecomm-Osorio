@@ -71,7 +71,18 @@ public class ClienteController {
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@RequestBody Cliente cliente, @PathVariable Long id) {
 
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(service.update(id, cliente));
+        service.UpdateClienteEncrypt(
+            id,
+            cliente.getNombre(),
+            cliente.getApellido(),
+            cliente.getEmail(),
+            cliente.getPassword(),
+            cliente.getTelefono(),
+            cliente.getFecha_nacimiento(),
+            cliente.getSexo()
+        );
+
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body("Cliente con Id: "+ id);
     }
 
     @PutMapping("/delete/{id}")

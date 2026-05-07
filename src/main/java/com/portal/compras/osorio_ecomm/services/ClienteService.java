@@ -17,5 +17,7 @@ public interface ClienteService {
         String apellido, String email,
         String password, String telefono, Date fecha_nacimiento,
          String sexo);
-    Optional<Cliente> update(Long id, Cliente cliente);
+    void UpdateClienteEncrypt(Long id, String nombre, String apellido, String email,
+        String password, String telefono, Date fecha_nacimiento,
+         String sexo);
 }

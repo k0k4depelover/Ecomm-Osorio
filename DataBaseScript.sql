@@ -185,6 +185,7 @@ CREATE TABLE METODO_PAGO (
 -- Tabla para el Servlet de autorización (Base de datos paralela simulada)[cite: 2]
 CREATE TABLE SIMULADOR_BANCO (
     id_usuario INT IDENTITY(1,1) NOT NULL,
+    numero_cuenta VARCHAR(12) NOT NULL,
     numero_tarjeta VARCHAR(16) NOT NULL,
     nombre_titular VARCHAR(150) NOT NULL,
     mes_vencimiento INT NOT NULL,
@@ -423,15 +424,15 @@ SELECT TOP 5 * FROM PRODUCTO_IMAGEN;
 GO
 
 
-GO
-ALTER PROCEDURE sp_insert_cliente_encrypt
-    @nombre VARCHAR(100),
-    @apellido VARCHAR(100),
-    @email VARCHAR(150),
-    @password VARCHAR(255),
-    @telefono VARCHAR(20),
-    @fecha_nacimiento DATE,
-    @sexo CHAR(1)
+CREATE OR ALTER PROCEDURE sp_update_cliente_encrypt
+    @id_cliente INT =NULL,
+    @nombre VARCHAR(100)=NULL,
+    @apellido VARCHAR(100)=NULL,
+    @email VARCHAR(150)=NULL,
+    @password VARCHAR(255)=NULL,
+    @telefono VARCHAR(20)=NULL,
+    @fecha_nacimiento DATE=NULL,
+    @sexo CHAR(1)=NULL
 AS
 BEGIN
     IF LEN(LTRIM(RTRIM(@nombre))) <= 2
@@ -455,6 +456,49 @@ BEGIN
     IF @fecha_nacimiento >= GETDATE()
         THROW 50007, 'El cliente no puede haber nacido en el futuro...', 1;
 
+    UPDATE CLIENTE SET
+    nombre = ISNULL(@nombre, nombre),
+    apellido = ISNULL(@apellido, apellido),
+    email = ISNULL(@email, email),
+    password_hash = ISNULL(
+            CASE WHEN @password IS NOT NULL
+                THEN CONVERT(VARCHAR(255), HASHBYTES('SHA2_256', @password), 2)
+            END,
+            password_hash
+    ),
+    telefono =ISNULL(@telefono, telefono),
+    fecha_nacimiento = ISNULL(@fecha_nacimiento, fecha_nacimiento),
+    sexo = ISNULL(@sexo, sexo)
+    WHERE id_cliente=@id_cliente
+END;
+GO
+
+
+GO
+CREATE OR ALTER PROCEDURE sp_insert_cliente_encrypt
+    @nombre VARCHAR(100),
+    @apellido VARCHAR(100),
+    @email VARCHAR(150),
+    @password VARCHAR(255),
+    @telefono VARCHAR(20),
+    @fecha_nacimiento DATE,
+    @sexo CHAR(1)
+AS
+BEGIN
+    IF LEN(LTRIM(RTRIM(@nombre))) <= 2
+        THROW 50001, 'El nombre debe tener una longitud mayor a 2 caracteres.', 1;
+    IF LEN(LTRIM(RTRIM(@apellido))) <= 2
+        THROW 50002, 'El apellido debe tener una longitud mayor a 2 caracteres.', 1;
+    IF @email NOT LIKE '%@%' OR LEN(@email) <= 10
+        THROW 50003, 'El email debe ser válido y tener una longitud mayor a 10 caracteres.', 1;
+    IF LEN(@password) <= 8
+        THROW 50004, 'La contraseña debe tener una longitud mayor a 8 caracteres.', 1;
+    IF LEN(LTRIM(RTRIM(@telefono))) < 8
+        THROW 50005, 'El teléfono debe tener un mínimo de 8 caracteres.', 1;
+    IF @sexo NOT IN ('M', 'F')
+        THROW 50006, 'El campo sexo solo acepta valores M o F.', 1;
+    IF @fecha_nacimiento >= GETDATE()
+        THROW 50007, 'El cliente no puede haber nacido en el futuro...', 1;
     INSERT INTO CLIENTE(nombre, apellido, email, password_hash, telefono, fecha_nacimiento, sexo, active, fecha_registro)
     VALUES(
         @nombre, @apellido, @email, CONVERT( VARCHAR(255), HASHBYTES('SHA2_256', @password), 2),

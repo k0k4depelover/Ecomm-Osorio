@@ -9,13 +9,13 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "CATEGORIA")
-public class Category {
+public class Categoria {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,14 +29,13 @@ public class Category {
     @Column(name = "fecha_creacion")
     private Date fecha_creacion;
 
-    // Autoreferencia - esta categoria pertenece a una categoria padre
-    @ManyToOne
-    @JoinColumn(name = "CATEGORIA_id_categoria")
-    private Category categoriaPadre;
-
-    // Autoreferencia - esta categoria tiene subcategorias hijas
-    @OneToMany(mappedBy = "categoriaPadre")
-    private List<Category> subcategorias;
+    @ManyToMany
+    @JoinTable(
+        name = "PRODUCTO_CATEGORIA",
+        joinColumns =  @JoinColumn(name="id_categoria"),
+        inverseJoinColumns = @JoinColumn(name="id_producto")
+    )
+    List<Producto> ProductoCat;
 
     public Long getId_categoria() {
         return id_categoria;
@@ -73,17 +72,5 @@ public class Category {
     }
     public void setFecha_creacion(Date fecha_creacion) {
         this.fecha_creacion = fecha_creacion;
-    }
-    public Category getCategoriaPadre() {
-        return categoriaPadre;
-    }
-    public void setCategoriaPadre(Category categoriaPadre) {
-        this.categoriaPadre = categoriaPadre;
-    }
-    public List<Category> getSubcategorias() {
-        return subcategorias;
-    }
-    public void setSubcategorias(List<Category> subcategorias) {
-        this.subcategorias = subcategorias;
     }
 }
