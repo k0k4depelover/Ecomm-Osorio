@@ -10,5 +10,8 @@ public interface CategoriaService {
     List <Producto> findByCategoriaNombre(String nombre);
     List<Categoria> findAll();
     Optional<Categoria> findById(Long id);
+    void deleteById(Long id);
+    Optional<Categoria> updateCategorua(Long id, Categoria categoria);
+
 
 }
